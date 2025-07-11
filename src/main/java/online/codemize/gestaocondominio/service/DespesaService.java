@@ -13,4 +13,6 @@ public interface DespesaService {
 
     Despesa buscarPorId(Long id);
 
+    List<Despesa> listar(String status);
+
 }
