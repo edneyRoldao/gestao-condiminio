@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import online.codemize.gestaocondominio.converter.UsuarioConverter;
 import online.codemize.gestaocondominio.domain.Usuario;
 import online.codemize.gestaocondominio.dto.UsuarioRequest;
+import online.codemize.gestaocondominio.exception.AssociacaoUsuarioUnidadeException;
 import online.codemize.gestaocondominio.exception.CriacaoUsuarioException;
 import online.codemize.gestaocondominio.exception.UsuarioNotFoundException;
+import online.codemize.gestaocondominio.repository.UnidadeRepository;
 import online.codemize.gestaocondominio.repository.UsuarioRepository;
 import online.codemize.gestaocondominio.service.UsuarioService;
 import org.mindrot.jbcrypt.BCrypt;
@@ -19,6 +21,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     private final UsuarioConverter converter;
     private final UsuarioRepository repository;
+    private final UnidadeRepository unidadeRepository;
 
     @Override
     public void criar(UsuarioRequest request) {
@@ -58,6 +61,19 @@ public class UsuarioServiceImpl implements UsuarioService {
             }
             throw new CriacaoUsuarioException("erro ao salvar no banco - " + erro);
         }
+    }
+
+    @Override
+    public void associarUnidade(String emailUsuario, String registroUnidade) {
+        var usuario = repository.findFirstByEmail(emailUsuario)
+                .orElseThrow(() -> new AssociacaoUsuarioUnidadeException("usuario nao encontrado em nossa base de dados"));
+
+        var unidade = unidadeRepository.findFirstByRegistro(registroUnidade)
+                .orElseThrow(() -> new AssociacaoUsuarioUnidadeException("unidade nao encontrada em nossa base de dados"));
+
+        unidade.setUsuario(usuario);
+
+        unidadeRepository.save(unidade);
     }
 
 }
