@@ -5,12 +5,6 @@ import lombok.*;
 import online.codemize.gestaocondominio.domain.enums.StatusDespesa;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-/*
-    jakarta = JPA
-    Vamos usar uma lib chamada Hibernate (mapeamento de banco de dados no java
-*/
 
 @Getter
 @Setter
@@ -18,13 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@EqualsAndHashCode(of = "id")
 @Table(name = "despesas")
-public class Despesa {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Despesa extends Domain {
 
     @Column(nullable = false)
     private String categoria;
@@ -44,11 +33,12 @@ public class Despesa {
     @Column(name = "data_pagamento")
     private LocalDate dataPagamento;
 
-    @Column(name = "data_cricao")
-    private LocalDateTime dataCriacao;
-
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private StatusDespesa status;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
 
 }

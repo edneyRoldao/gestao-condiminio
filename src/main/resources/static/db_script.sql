@@ -14,14 +14,16 @@ CREATE TABLE usuarios (
     nome            VARCHAR(255)    NOT NULL                            ,
     email           VARCHAR(255)    NOT NULL UNIQUE                     ,
     senha           VARCHAR(255)    NOT NULL                            ,
-    admin           BOOLEAN         NOT NULL DEFAULT false
+    admin           BOOLEAN         NOT NULL DEFAULT false              ,
+    data_cricao TIMESTAMP       NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE unidades (
     id          BIGINT          NOT NULL AUTO_INCREMENT PRIMARY KEY ,
     tipo        VARCHAR(50)     NOT NULL                            ,
     registro    VARCHAR(255)    NOT NULL UNIQUE                     ,
-    id_usuario  BIGINT
+    id_usuario  BIGINT          NULL                                ,
+    data_cricao TIMESTAMP       NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE despesas (
