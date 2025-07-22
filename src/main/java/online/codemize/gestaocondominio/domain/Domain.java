@@ -18,6 +18,6 @@ public abstract class Domain {
     private Long id;
 
     @Column(name = "data_cricao")
-    private LocalDateTime dataCriacao;
+    private LocalDateTime dataCriacao = LocalDateTime.now();
 
 }
