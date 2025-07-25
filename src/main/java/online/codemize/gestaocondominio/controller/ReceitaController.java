@@ -3,6 +3,7 @@ package online.codemize.gestaocondominio.controller;
 import lombok.RequiredArgsConstructor;
 import online.codemize.gestaocondominio.domain.Receita;
 import online.codemize.gestaocondominio.dto.ReceitaRequest;
+import online.codemize.gestaocondominio.oauth.PreAutorizado;
 import online.codemize.gestaocondominio.service.ReceitaService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class ReceitaController {
 
     private final ReceitaService service;
 
+    @PreAutorizado
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void cadastrarReceita(@RequestBody ReceitaRequest request) {

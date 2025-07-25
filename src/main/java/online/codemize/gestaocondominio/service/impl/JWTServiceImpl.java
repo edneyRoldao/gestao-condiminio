@@ -1,9 +1,11 @@
 package online.codemize.gestaocondominio.service.impl;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import online.codemize.gestaocondominio.domain.Usuario;
-import online.codemize.gestaocondominio.dto.UsuarioPayload;
 import online.codemize.gestaocondominio.service.JWTService;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +33,21 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public UsuarioPayload validarTokenExtrairPayload(String token) {
-        return null;
+    public void validarToken(String token) {
+        var payloadClaims = Jwts
+                .parser()
+                .verifyWith(obterSecretKey())
+                .build()
+                .parseSignedClaims(token);
+
+        verificarExpiracaoToken(payloadClaims);
+    }
+
+    private void verificarExpiracaoToken(Jws<Claims> claims) {
+        Date dtExpiracaoToken = claims.getPayload().getExpiration();
+        var agora = new Date();
+        if (agora.after(dtExpiracaoToken))
+            throw new JwtException("Token expirado");
     }
 
     private Map<String, Object> construirPayload(Usuario usuario) {
