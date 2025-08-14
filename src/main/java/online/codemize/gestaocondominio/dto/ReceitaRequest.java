@@ -5,7 +5,6 @@ public record ReceitaRequest(String descricao,
                              String dataVencimento,
                              Double valor,
                              String categoria,
-                             Long idUnidade,
-                             Long idUsuario) {
+                             Long idUnidade) {
 
 }

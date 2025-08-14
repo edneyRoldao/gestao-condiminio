@@ -6,7 +6,10 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import online.codemize.gestaocondominio.domain.Usuario;
+import online.codemize.gestaocondominio.oauth.UsuarioClaims;
 import online.codemize.gestaocondominio.service.JWTService;
+import online.codemize.gestaocondominio.utils.AppMessages;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -18,7 +21,11 @@ import java.util.Map;
 @Service
 public class JWTServiceImpl implements JWTService {
 
-    private static final String CHAVE_ASSINATURA_TOKEN = "AKfwBsPyvjtSmH24HrMxRnMxj6yiv2Bekd2DHqrEtE87Q8CiRokOYpdc8y3wY8L7CwoB5bIe4X9Pp4qSIT51CA==";
+    @Value("${app.token.expiration}")
+    private Integer tokenExpirationSeconds;
+
+    @Value("${app.token.signing_key}")
+    private String chaveAssinaturaToken;
 
     @Override
     public String gerarTokenAcesso(Usuario usuario) {
@@ -33,38 +40,38 @@ public class JWTServiceImpl implements JWTService {
     }
 
     @Override
-    public void validarToken(String token) {
+    public String validarTokenAndGetEmailUsuario(String token) {
         var payloadClaims = Jwts
                 .parser()
                 .verifyWith(obterSecretKey())
                 .build()
                 .parseSignedClaims(token);
-
         verificarExpiracaoToken(payloadClaims);
+        return payloadClaims.getPayload().get(UsuarioClaims.email.name(), String.class);
     }
 
     private void verificarExpiracaoToken(Jws<Claims> claims) {
         Date dtExpiracaoToken = claims.getPayload().getExpiration();
         var agora = new Date();
         if (agora.after(dtExpiracaoToken))
-            throw new JwtException("Token expirado");
+            throw new JwtException(AppMessages.TOKEN_EXPIRADO_ERRO);
     }
 
     private Map<String, Object> construirPayload(Usuario usuario) {
         Map<String, Object> mapa = new HashMap<>();
-        mapa.put("email", usuario.getEmail());
-        mapa.put("admin", usuario.getAdmin());
+        mapa.put(UsuarioClaims.email.name(), usuario.getEmail());
+        mapa.put(UsuarioClaims.admin.name(), usuario.getAdmin());
         return mapa;
     }
 
     private Date obterDataExpiracaoToken() {
         var instant = Instant.now();
-        var expiration = instant.plusSeconds(60);
+        var expiration = instant.plusSeconds(tokenExpirationSeconds);
         return Date.from(expiration);
     }
 
     private SecretKey obterSecretKey() {
-        return Keys.hmacShaKeyFor(CHAVE_ASSINATURA_TOKEN.getBytes());
+        return Keys.hmacShaKeyFor(chaveAssinaturaToken.getBytes());
     }
 
 }

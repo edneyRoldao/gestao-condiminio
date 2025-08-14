@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import online.codemize.gestaocondominio.domain.Despesa;
 import online.codemize.gestaocondominio.domain.enums.StatusDespesa;
 import online.codemize.gestaocondominio.dto.DespesaRequest;
-import online.codemize.gestaocondominio.service.UsuarioService;
+import online.codemize.gestaocondominio.oauth.UsuarioAppContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -18,15 +18,13 @@ import static online.codemize.gestaocondominio.utils.DateUtils.stringToLocalDate
 @RequiredArgsConstructor
 public class DespesaConverter {
 
-    private final UsuarioService usuarioService;
+    private final UsuarioAppContext usuarioAppContext;
 
     public Despesa convert(DespesaRequest request) {
-        var usuario = usuarioService.obterUsuario(request.idUsuario());
-
         Despesa despesa = new Despesa();
         BeanUtils.copyProperties(request, despesa);
 
-        despesa.setUsuario(usuario);
+        despesa.setUsuario(usuarioAppContext.getUsuario());
         despesa.setDataVencimento(stringToLocalDate(request.dataVencimento()));
         despesa.setDataPagamento(stringToLocalDate(request.dataPagamento()));
         despesa.setDataCriacao(LocalDateTime.now());
