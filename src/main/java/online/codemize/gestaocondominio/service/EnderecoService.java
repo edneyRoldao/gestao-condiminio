@@ -1,9 +1,9 @@
 package online.codemize.gestaocondominio.service;
 
-import online.codemize.gestaocondominio.domain.Unidade;
+import online.codemize.gestaocondominio.dto.UnidadeEnderecoRequest;
 
 public interface EnderecoService {
 
-    void cadastrarEndereco(Unidade unidade, String cep, String numero, String complemento);
+    void cadastrarEnderecoUnidade(UnidadeEnderecoRequest request);
 
 }

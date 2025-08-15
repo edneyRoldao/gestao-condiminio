@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(url = "https://brasilapi.com.br")
+@FeignClient(name = "brazilAPI", url = "https://brasilapi.com.br")
 public interface BrazilAPIClient {
 
     @GetMapping("api/cep/v2/{cep}")
